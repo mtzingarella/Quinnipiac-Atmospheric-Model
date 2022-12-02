@@ -48,7 +48,7 @@ Met = {...
     'RH'         Sep27.RHumid; %Relative Humidity, %
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
-    'J4'         Sep27.PSS_NO2;
+    'JNO2'         Sep27.PSS_NO2;
     % 'jcorr'      'J4'; %optimizes comparison b/w model and observed NO/NO2
    
     };

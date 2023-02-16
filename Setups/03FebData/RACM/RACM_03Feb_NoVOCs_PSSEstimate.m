@@ -49,7 +49,7 @@ Met = {...
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
     'JNO2'         Feb03.PSS_NO2;
-    % 'jcorr'      'J4'; %optimizes comparison b/w model and observed NO/NO2
+     'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
    
     };
 
@@ -74,7 +74,7 @@ InitConc = {...
     
     %NOy
     'NO'                Feb03.NO              1;
-    'NO2'               Feb03.NO2             1;
+    'NO2'               Feb03.NO2            1;
     %'NOx'               {'NO2','NO'}        []; %family conservation
 
    

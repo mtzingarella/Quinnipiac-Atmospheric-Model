@@ -183,7 +183,7 @@ plot(x,y1,'k') %Observed O3 as black line
 hold on %Plot the next point on the same figure
 plot(x,y2,'o') %Model Prediction as blue line
 
-title('Model Prediction, No VOCs, 26Jan')
+title('Model Prediction, No VOCs, Feb03')
 
 legend('Observed Values','Model Prediction')
 

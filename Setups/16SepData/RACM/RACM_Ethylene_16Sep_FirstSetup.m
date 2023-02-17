@@ -170,16 +170,33 @@ S = F0AM_ModelCore(Met,InitConc,ChemFiles,BkgdConc,ModelOptions);
 
 %% PLOTTING AND ANALYSIS
 
-% First, let's separate the three days using SplitRun.
-% The first day is effectively "spin-up" for secondary and intermediate species.
-SplitRun(S,'custom',repIndex)
 
+figure % new figure, Model compared to actual O3
 
-% Now, let's see how ozone did over the three days.
-PlotConc('O3',S)
-hold on
-plot(Sep16.Time,Sep16.O3,'k-')
-legend('Obs')
+x = Sep16.Time; % X - axis, minute of day
+y1 = Sep16.O3; % Y1, Observed O3
+y2 = S.Conc.O3; % Y2, Model prediction, O3
+plot(x,y1,'k') %Observed O3 as black line
+
+hold on %Plot the next point on the same figure
+plot(x,y2,'-o', 'LineWidth',3) %Model Prediction as blue line
+
+title('Model Prediction, No VOCs, Sep16')
+
+legend('Observed Values','Model Prediction')
+
+figure % New figure, difference between model and actual
+
+x = Sep16.Time; % X - axis, minute of day
+y1 = Sep16.O3; % Y1, Observed O3
+y2 = S.Conc.O3; % Y2, Model prediction, O3
+
+diff = y2-y1;  %model-actual
+
+plot(x,diff) % Plot difference vs minute of day
+
+title('Model Disparity')
+
 
 
 

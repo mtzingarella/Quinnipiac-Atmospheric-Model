@@ -181,7 +181,7 @@ y2 = S.Conc.O3; % Y2, Model prediction, O3
 plot(x,y1,'k') %Observed O3 as black line
 
 hold on %Plot the next point on the same figure
-plot(x,y2,'o') %Model Prediction as blue line
+plot(x,y2,'-o', 'LineWidth',3) %Model Prediction as blue line
 
 title('Model Prediction, No VOCs, Feb09')
 

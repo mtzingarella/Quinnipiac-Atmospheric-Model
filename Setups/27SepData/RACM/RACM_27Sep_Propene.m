@@ -81,7 +81,8 @@ InitConc = {...
 
     'CH4'               1770                   1;
 
-    'OLT'          Sep27.PropeneEstNO        1;   
+%    'OLT'                  50                  1;   
+     'OLT'          Sep27.PropeneEstNO        1; 
     };
 
 %% CHEMISTRY

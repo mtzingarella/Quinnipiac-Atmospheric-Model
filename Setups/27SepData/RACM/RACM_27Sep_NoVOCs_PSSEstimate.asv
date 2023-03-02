@@ -69,27 +69,18 @@ InitConc = {...
     %Inorganics
     'H2'                550                  1;
     'O3'                Sep27.O3              0;  
-      'CO'                150                 1;
    
 
     
     %NOy
-    'NO'                Sep27.NO              1;
+    'NO'                Sep27.NO          1;
     'NO2'               Sep27.NO2             1;
-  %  'NOx'               {'NO2','NO'}        []; %family conservation
+    %'NOx'               {'NO2','NO'}        []; %family conservation
 
    
 
 
     'CH4'               1770                   1;
-
-    %Misc
-
-    'HCHO'             50                    1;
-    'ISO'                  10               1;
-    'BEN'               10                  1;
-    'XYP'               50                  1;
-    'XYO'                  50               1;
 
   
   

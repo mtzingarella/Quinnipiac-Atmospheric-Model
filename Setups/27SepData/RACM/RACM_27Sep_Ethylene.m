@@ -37,7 +37,7 @@ time.min            = Sep27.Time.*o;
 time.sec            = 0*o;
 time.UTC            = -4;
 location.latitude   = 41.4203;
-location.longitude  = 72.8936;
+location.longitude  = -72.8936;
 location.altitude   = 33; 
 sun = sun_position(time,location); %fields zenith and azimuth
 
@@ -49,6 +49,7 @@ Met = {...
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
     'jcorr'      1; %optimizes comparison b/w model and observed NO/NO2
+    'JNO2'         Sep27.PSS_NO2;
     };
 
 %% CHEMICAL CONCENTRATIONS
@@ -67,7 +68,7 @@ InitConc = {...
     %Inorganics
     'H2'                550                  1;
     'O3'                Sep27.O3              0;  
-   
+  
 
     
     %NOy
@@ -169,20 +170,18 @@ S = F0AM_ModelCore(Met,InitConc,ChemFiles,BkgdConc,ModelOptions);
 % clear Met InitConc ChemFiles BkgdConc ModelOptions
 
 %% PLOTTING AND ANALYSIS
-
 figure % new figure, Model compared to actual O3
-
 x = Sep27.Time; % X - axis, minute of day
 y1 = Sep27.O3; % Y1, Observed O3
 y2 = S.Conc.O3; % Y2, Model prediction, O3
 plot(x,y1,'k') %Observed O3 as black line
 
 hold on %Plot the next point on the same figure
-plot(x,y2,'o') %Model Prediction as blue line
+plot(x,y2,'-o','LineWidth',3) %Model Prediction as blue line
+
+title('Model Prediction, Ethylene, Sep27')
 
 legend('Observed Values','Model Prediction')
-
-title('Model Prediction, Add_Ethylene, 27_Sep')
 
 figure % New figure, difference between model and actual
 

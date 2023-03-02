@@ -49,7 +49,7 @@ Met = {...
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
     'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
-     'JNO2'         Sep27.PSS_NO2;
+    'JNO2'         Sep27.PSS_NO2;
     };
 
 %% CHEMICAL CONCENTRATIONS
@@ -81,7 +81,9 @@ InitConc = {...
 
     'CH4'               1770                   1;
 
-    'ETE'                  50000                1;   
+    'OLT'          Sep27.PropeneEstNO        1;   
+    'TOL'          Sep27.TolueneEstNO        1;   
+    'ETE'          Sep27.EthyleneEstNO        1; 
     };
 
 %% CHEMISTRY
@@ -172,6 +174,7 @@ S = F0AM_ModelCore(Met,InitConc,ChemFiles,BkgdConc,ModelOptions);
 %% PLOTTING AND ANALYSIS
 
 figure % new figure, Model compared to actual O3
+
 x = Sep27.Time; % X - axis, minute of day
 y1 = Sep27.O3; % Y1, Observed O3
 y2 = S.Conc.O3; % Y2, Model prediction, O3
@@ -180,7 +183,7 @@ plot(x,y1,'k') %Observed O3 as black line
 hold on %Plot the next point on the same figure
 plot(x,y2,'-o','LineWidth',3) %Model Prediction as blue line
 
-title('Model Prediction, Ethylene, Sep27')
+title('Model Prediction, Propene, Sep27')
 
 legend('Observed Values','Model Prediction')
 
@@ -195,4 +198,3 @@ diff = y2-y1;  %model-actual
 plot(x,diff) % Plot difference vs minute of day
 
 title('Model Disparity')
-

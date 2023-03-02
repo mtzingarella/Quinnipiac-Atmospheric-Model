@@ -1,4 +1,4 @@
-%Changing mech to RACM
+%PSS estimates input in Met
 
 % ExampleSetup_DielCycle.m
 % This example shows a model setup for simulation of an "average" diurnal cycle at a ground location.
@@ -28,7 +28,7 @@ kdil is a physical loss constant for all species; 1 per day is a typical value.
 %}
 
 %calculate solar zenith angles for day in middle of campaign
-o = ones(size(Sep27.Temp));
+o = ones(size(Sep27.Time));
 time.year           = 2022*o;
 time.month          = 9*o;
 time.day            = 27*o;
@@ -37,7 +37,7 @@ time.min            = Sep27.Time.*o;
 time.sec            = 0*o;
 time.UTC            = -4;
 location.latitude   = 41.4203;
-location.longitude  = -72.8936;
+location.longitude  = 72.8936;
 location.altitude   = 33; 
 sun = sun_position(time,location); %fields zenith and azimuth
 
@@ -48,8 +48,9 @@ Met = {...
     'RH'         Sep27.RHumid; %Relative Humidity, %
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
-    'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
-     'JNO2'         Sep27.PSS_NO2;
+    'JNO2'         Sep27.PSS_NO2;
+     'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
+   
     };
 
 %% CHEMICAL CONCENTRATIONS
@@ -68,20 +69,22 @@ InitConc = {...
     %Inorganics
     'H2'                550                  1;
     'O3'                Sep27.O3              0;  
+   %   'CO'                15000                 1;
    
 
     
     %NOy
     'NO'                Sep27.NO              1;
     'NO2'               Sep27.NO2             1;
-    %'NOx'               {'NO2','NO'}        []; %family conservation
+  %  'NOx'               {'NO2','NO'}        []; %family conservation
 
    
 
 
     'CH4'               1770                   1;
 
-    'ETE'                  50000                1;   
+  
+  
     };
 
 %% CHEMISTRY
@@ -172,6 +175,7 @@ S = F0AM_ModelCore(Met,InitConc,ChemFiles,BkgdConc,ModelOptions);
 %% PLOTTING AND ANALYSIS
 
 figure % new figure, Model compared to actual O3
+
 x = Sep27.Time; % X - axis, minute of day
 y1 = Sep27.O3; % Y1, Observed O3
 y2 = S.Conc.O3; % Y2, Model prediction, O3
@@ -180,7 +184,7 @@ plot(x,y1,'k') %Observed O3 as black line
 hold on %Plot the next point on the same figure
 plot(x,y2,'-o','LineWidth',3) %Model Prediction as blue line
 
-title('Model Prediction, Ethylene, Sep27')
+title('Model Prediction, No VOCs, Sep27')
 
 legend('Observed Values','Model Prediction')
 
@@ -195,4 +199,6 @@ diff = y2-y1;  %model-actual
 plot(x,diff) % Plot difference vs minute of day
 
 title('Model Disparity')
+
+
 

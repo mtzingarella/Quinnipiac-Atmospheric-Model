@@ -37,7 +37,7 @@ time.min            = Sep27.Time.*o;
 time.sec            = 0*o;
 time.UTC            = -4;
 location.latitude   = 41.4203;
-location.longitude  = 72.8936;
+location.longitude  = -72.8936;
 location.altitude   = 33; 
 sun = sun_position(time,location); %fields zenith and azimuth
 
@@ -48,8 +48,8 @@ Met = {...
     'RH'         Sep27.RHumid; %Relative Humidity, %
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
-   % 'JNO2'         Sep27.PSS_NO2;
-  %   'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
+    'JNO2'         Sep27.PSS_NO2;
+     'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
    
     };
 
@@ -73,7 +73,7 @@ InitConc = {...
 
     
     %NOy
-    'NO'                Sep27.NO              1;
+    'NO'                Sep27.NO          1;
     'NO2'               Sep27.NO2             1;
     %'NOx'               {'NO2','NO'}        []; %family conservation
 

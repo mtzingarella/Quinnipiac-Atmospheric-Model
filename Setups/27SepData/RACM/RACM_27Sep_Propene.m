@@ -37,7 +37,7 @@ time.min            = Sep27.Time.*o;
 time.sec            = 0*o;
 time.UTC            = -4;
 location.latitude   = 41.4203;
-location.longitude  = 72.8936;
+location.longitude  = -72.8936;
 location.altitude   = 33; 
 sun = sun_position(time,location); %fields zenith and azimuth
 
@@ -48,7 +48,8 @@ Met = {...
     'RH'         Sep27.RHumid; %Relative Humidity, %
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
-    'jcorr'      0.3; %optimizes comparison b/w model and observed NO/NO2
+    'JNO2'         Sep27.PSS_NO2;
+    'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
     };
 
 %% CHEMICAL CONCENTRATIONS
@@ -170,14 +171,6 @@ S = F0AM_ModelCore(Met,InitConc,ChemFiles,BkgdConc,ModelOptions);
 
 %% PLOTTING AND ANALYSIS
 
-% First, let's separate the three days using SplitRun.
-% The first day is effectively "spin-up" for secondary and intermediate species.
-%SplitRun(S,'custom',repIndex)
-
-
-% Now, let's see how ozone did over the three days.
-
-
 figure % new figure, Model compared to actual O3
 
 x = Sep27.Time; % X - axis, minute of day
@@ -186,11 +179,11 @@ y2 = S.Conc.O3; % Y2, Model prediction, O3
 plot(x,y1,'k') %Observed O3 as black line
 
 hold on %Plot the next point on the same figure
-plot(x,y2,'o') %Model Prediction as blue line
+plot(x,y2,'-o','LineWidth',3) %Model Prediction as blue line
+
+title('Model Prediction, Propene, Sep27')
 
 legend('Observed Values','Model Prediction')
-
-title('Model Prediction, Add_Propene, 27_Sep')
 
 figure % New figure, difference between model and actual
 
@@ -203,6 +196,3 @@ diff = y2-y1;  %model-actual
 plot(x,diff) % Plot difference vs minute of day
 
 title('Model Disparity')
-
-
-

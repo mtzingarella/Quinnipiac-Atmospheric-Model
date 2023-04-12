@@ -30,14 +30,14 @@ kdil is a physical loss constant for all species; 1 per day is a typical value.
 %calculate solar zenith angles for day in middle of campaign
 o = ones(size(Feb03.Time));
 time.year           = 2023*o;
-time.month          = 1*o;
-time.day            = 26*o;
+time.month          = 2*o;
+time.day            = 03*o;
 time.hour           = 0*o;
 time.min            = Feb03.Time.*o;
 time.sec            = 0*o;
 time.UTC            = -4;
 location.latitude   = 41.4203;
-location.longitude  = 72.8936;
+location.longitude  = -72.8936;
 location.altitude   = 33; 
 sun = sun_position(time,location); %fields zenith and azimuth
 

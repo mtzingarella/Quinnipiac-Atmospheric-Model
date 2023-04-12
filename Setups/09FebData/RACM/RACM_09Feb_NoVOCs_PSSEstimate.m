@@ -37,7 +37,7 @@ time.min            = Feb09.Time.*o;
 time.sec            = 0*o;
 time.UTC            = -4;
 location.latitude   = 41.4203;
-location.longitude  = 72.8936;
+location.longitude  = -72.8936;
 location.altitude   = 33; 
 sun = sun_position(time,location); %fields zenith and azimuth
 
@@ -49,7 +49,7 @@ Met = {...
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
     'JNO2'         Feb09.PSS_NO2;
-    % 'jcorr'      'J4'; %optimizes comparison b/w model and observed NO/NO2
+     'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
    
     };
 

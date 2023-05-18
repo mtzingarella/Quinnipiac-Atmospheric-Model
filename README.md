@@ -2,7 +2,7 @@
 
 ## About This Project
 
-This repo is for the work I completed for my senior research as a biochemistry major at Quinnipiac University. Utlizing the framework for atmospheric modeling
+This repo is for the work I completed for my senior research as a biochemistry major at Quinnipiac University. Utlizing the framework for 0-D atmospheric modeling
 (https://github.com/AirChem/F0AM), measurements of atmospheric chemical concentrations/meteorological conditions made on campus, and a few different methods
 of estimation for certain key values, the production of ozone on campus was modeled.
 

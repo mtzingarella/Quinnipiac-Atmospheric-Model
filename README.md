@@ -9,7 +9,6 @@ of estimation for certain key values, the production of ozone on campus was mode
 For a more detailed explanation of this project, I suggest reading the "Senior-Research-Report" word document I have in this repo, which is the final report
 I turned in for my research, written in the style of a Journal of Atmospheric Chemistry pre-print publication.
 
-The "MySetupsAndScripts
 
 ## About This Repo
 

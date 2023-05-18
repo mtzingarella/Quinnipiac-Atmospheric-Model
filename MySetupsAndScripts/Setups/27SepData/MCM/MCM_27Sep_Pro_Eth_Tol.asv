@@ -1,8 +1,6 @@
-% Setup for data collected on 2/3/2023 utilizing the RACM2 mechanism and
-% only NO/NO2 measurements with PSS used to estimate JNO2.
-
-% Code organization based on Glenn Wolfe's "DielCycle" example
-% setup found in F0AM
+%Model of O3 production from measurements taken on 9/27/2022. Estimates for
+%propene, ethylene, and toluene are made by scaling fluctuations with
+%fluctuations in NO. Default SZA method used for NO2 photolysis
 
 clear
 
@@ -11,7 +9,7 @@ clear
 Loading in measurement data
 %}
 
-load Feb03Data.mat
+load Sep27Data.mat
 
 %% METEOROLOGY
 %{
@@ -20,29 +18,27 @@ Inputting both meteorological paramaters and photolysis estimations
 
 %Time/location parameters used for time interp and solar zenith angle
 %calculations (when SZA method is used)
-o = ones(size(Feb03.Time));
-time.year           = 2023*o;
-time.month          = 2*o;
-time.day            = 03*o;
+o = ones(size(Sep27.Temp));
+time.year           = 2022*o;
+time.month          = 9*o;
+time.day            = 27*o;
 time.hour           = 0*o;
-time.min            = Feb03.Time.*o;
+time.min            = Sep27.Time.*o;
 time.sec            = 0*o;
 time.UTC            = -4;
 location.latitude   = 41.4203;
 location.longitude  = -72.8936;
 location.altitude   = 33; 
-sun = sun_position(time,location); 
+sun = sun_position(time,location); %fields zenith and azimuth
 
 Met = {...
 %   names       %values
-    'P'          Feb03.P; %Pressure, mbar
-    'T'          Feb03.Temp; %Temperature, K
-    'RH'         Feb03.RHumid; %Relative Humidity, %
+    'P'          Sep27.P; %Pressure, mbar
+    'T'          Sep27.Temp; %Temperature, K
+    'RH'         Sep27.RHumid; %Relative Humidity, %
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
-    'JNO2'         Feb03.PSS_NO2; %Values for JNO2 calculated by PSS method
-     'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
-   
+    'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
     };
 
 %% CHEMICAL CONCENTRATIONS
@@ -57,22 +53,22 @@ InitConc = {...
     
     %Inorganics
     'H2'                550                  1;
-    'O3'                35                   0;  
+    'O3'                Sep27.O3              0;  
    
 
     
     %NOy
-    'NO'                Feb03.NO              1;
-    'NO2'               Feb03.NO2            1;
+    'NO'                Sep27.NO              1;
+    'NO2'               Sep27.NO2             1;
 
 
    
 
 
     'CH4'               1770                   1;
-
-  
-  
+    'C2H4'          Sep27.EthyleneEstNO         1;
+    'C3H6'          Sep27.PropeneEstNO        1;   
+    'TOLUENE'           Sep27.TolueneEstNO         1;
     };
 
 %% CHEMISTRY
@@ -80,9 +76,9 @@ InitConc = {...
 Selecting the chemical mechanisms for the model to use. 
 %}
 ChemFiles = {...
-   'RACM2_K(Met)';
-   'RACM2_J(Met,0)'; 
-    'RACM2_AllRxns';
+     'MCMv331_K(Met)';
+   'MCMv331_J(Met,0)';
+   'FiveVOCs';
    };
 
 %% DILUTION CONCENTRATIONS
@@ -102,13 +98,12 @@ ModelOptions.Verbose        = 2;
 ModelOptions.EndPointsOnly  = 1;
 ModelOptions.LinkSteps      = 1;%Link quasi spinup
 ModelOptions.IntTime        = 60; %60 second intervals - mz
-ModelOptions.TimeStamp      = Feb03.Time;
+ModelOptions.TimeStamp      = Sep27.Time;
 ModelOptions.SavePath       = 'C:\Users\Mzing\git\quinnipiac-senior-research\MySetupsAndScripts\SavedOutputs\MiscSaves\MostRecentRun';
 
 
 
 %% INPUT REPLICATION AND INTERPOLATION
-
 % REPLICATION
 
 nRep = 1; %number of days to repeat
@@ -116,43 +111,43 @@ nRep = 1; %number of days to repeat
 ModelOptions.TimeStamp = repmat(ModelOptions.TimeStamp,nRep,1);
 
 %% MODEL RUN
-
 %Starts the model run with above settings
 
 S = F0AM_ModelCore(Met,InitConc,ChemFiles,BkgdConc,ModelOptions);
-clear Met InitConc ChemFiles BkgdConc ModelOptions
+ clear Met InitConc ChemFiles BkgdConc ModelOptions
 
 %% PLOTTING AND ANALYSIS
 
-%NEW FIGURE: O3 PREDICTED BY MODEL COMPARED TO MEASURED O3
-
+%NEW FIGURE: Model predicted O3 compared to measured O3
 figure 
 
-x = Feb03.Time; 
-y1 = Feb03.O3;
+x = Sep27.Time; 
+y1 = Sep27.O3; 
 y2 = S.Conc.O3; 
 plot(x,y1,'k') 
 
 hold on 
-plot(x,y2,'-o','LineWidth',3) 
+plot(x,y2,'-o', 'LineWidth',3) 
 
-title('Model Prediction, No VOCs, Feb03')
+title('Model Prediction, No VOCs PSS, Sep27')
 
 legend('Observed Values','Model Prediction')
 
-%NEXT FIGURE: PLOTTED DISPARITY BETWEEN MODEL AND MEASUREMENT
+%NEXT FIGURE: Disparity between predicted O3 and measured O3
 
 figure 
 
-x = Feb03.Time; 
-y1 = Feb03.O3; 
+x = Sep27.Time; 
+y1 = Sep27.O3; 
 y2 = S.Conc.O3; 
 
-diff = y2-y1;  
+diff = y2-y1; 
 
 plot(x,diff) 
 
 title('Model Disparity')
+
+
 
 
 

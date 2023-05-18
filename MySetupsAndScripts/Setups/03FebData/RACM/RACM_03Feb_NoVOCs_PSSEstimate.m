@@ -36,7 +36,7 @@ sun = sun_position(time,location);
 Met = {...
 %   names       %values
     'P'          Feb03.P; %Pressure, mbar
-    'T'          Feb03.Temp; %Temperature, K
+    'T'          (Feb03.Temp + 273.15); %Temperature, K
     'RH'         Feb03.RHumid; %Relative Humidity, %
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s

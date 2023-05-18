@@ -1,37 +1,29 @@
-%PSS estimates input in Met
+% Setup for data collected on 2/9/2023 utilizing the RACM2 mechanism and
+% only NO/NO2 measurements with PSS used to estimate JNO2.
 
-% ExampleSetup_DielCycle.m
-% This example shows a model setup for simulation of an "average" diurnal cycle at a ground location.
-% In particular, we will try to simulate ozone production.
-% Read comments in each section for a guided tour.
-%
-% 20151126 GMW
+% Code organization based on Glenn Wolfe's "DielCycle" example
+% setup found in F0AM
 
 clear
 
 %% OBSERVATIONS
 %{
-Constraints are taken from observations at the Centerville, AL site of the 2013 SOAS field campaign.
-The file loaded below contains these observations averaged to a 24-hour cycle  in 1-hour increments. 
-Note that constraints CANNOT contains NaNs or negative numbers (data in this file has already been filtered).
-Thanks to J. Kaiser for compiling these observations and to all the hard-working researchers for collecting them.
+Loading in measurement data
 %}
 
-load Obs_SOAS_CampaignAvg_60min.mat %structure "SOAS"
 load Feb09Data.mat
 
 %% METEOROLOGY
 %{
-P, T and RH were measured at the site and will be updated every step of the simulation.
-SZA was not measured, so we can use a function to calculate it.
-kdil is a physical loss constant for all species; 1 per day is a typical value.
+Inputting both meteorological paramaters and photolysis estimations
 %}
 
-%calculate solar zenith angles for day in middle of campaign
+%Time/location parameters used for time interp and solar zenith angle
+%calculations (when SZA method is used)
 o = ones(size(Feb09.Time));
 time.year           = 2023*o;
-time.month          = 1*o;
-time.day            = 26*o;
+time.month          = 2*o;
+time.day            = 9*o;
 time.hour           = 0*o;
 time.min            = Feb09.Time.*o;
 time.sec            = 0*o;
@@ -39,7 +31,7 @@ time.UTC            = -4;
 location.latitude   = 41.4203;
 location.longitude  = -72.8936;
 location.altitude   = 33; 
-sun = sun_position(time,location); %fields zenith and azimuth
+sun = sun_position(time,location);
 
 Met = {...
 %   names       %values
@@ -48,19 +40,16 @@ Met = {...
     'RH'         Feb09.RHumid; %Relative Humidity, %
     'SZA'        sun.zenith; %solar zenith angle, degrees
     'kdil'       0; %dilution constant, /s
-    'JNO2'         Feb09.PSS_NO2;
+    'JNO2'         Feb09.PSS_NO2; %Values for JNO2 calculated by PSS method
      'jcorr'      0.5; %optimizes comparison b/w model and observed NO/NO2
    
     };
 
 %% CHEMICAL CONCENTRATIONS
 %{
-Concentrations are initialized using observations or fixed values.
-Species with HoldMe = 1 will be held constant throughout each step.
-Species with HoldMe = 0 are only initialized at the start of the run, because
- ModelOptions.LinkSteps=1 (see below). For this particular case, NO2 and O3 are
- unconstrained because we are investigating ozone production.
-When many species are used, it helps to organize alphabetically or by functional group.
+NO/NO2 are measured, all other inputted chemicals are reasonable estimates.
+O3 was measured but left unconstraiend to compare the resulting predicitons to
+measurements
 %}
 
 InitConc = {...
@@ -75,7 +64,7 @@ InitConc = {...
     %NOy
     'NO'                Feb09.NO              1;
     'NO2'               Feb09.NO2             1;
-    %'NOx'               {'NO2','NO'}        []; %family conservation
+ 
 
    
 
@@ -88,36 +77,25 @@ InitConc = {...
 
 %% CHEMISTRY
 %{
-ChemFiles is a cell array of strings specifying functions and scripts for the chemical mechanism.
-THE FIRST CELL is always a function for generic K-values.
-THE SECOND CELL is always a function for J-values (photolysis frequencies).
-All other inputs are scripts for mechanisms and sub-mechanisms.
-Here we give example using MCMv3.3.1. Note that this mechanism was extracted from the MCM website for
-the specific set of initial species included above.
+Selecting the chemical mechanisms for the model to use. 
 %}
 ChemFiles = {...
    'RACM2_K(Met)';
-   'RACM2_J(Met,0)'; %Jmethod flag of 0 specifies default MCM parameterization
-    'RACM2_AllRxns'; %alternate mechanism with less VOC
+   'RACM2_J(Met,0)'; 
+    'RACM2_AllRxns'; 
    };
 
 %% DILUTION CONCENTRATIONS
 %{
-Background concentrations, along with the value of kdil in Met, determine the dilution rate for chemical species.
-Here we stick with the default value of 0 for all species, which effectively makes dilution a first-order loss.
+Setting background concentrations to 0 for all species, affects dilution
+rates.
 %}
 BkgdConc = {'DEFAULT'       0};
 
 %% OPTIONS
 %{
-"Verbose" can be set from 0-3; this just affects the level of detail printed to the command
-  window regarding model progress.
-"EndPointsOnly" is set to 1 because we only want the last point of each step.
-"LinkSteps" is set to 1 so that non-constrained species are carried over between steps.
-"IntTime" is the integration time for each step, equal to the spacing of the data (60 minutes).
-"TimeStamp" is set to the hour-of-day for observations.
-"SavePath" give the filename only (in this example); the default save directory is the UWCMv3\Runs folder.
-"FixNOx" forces total NOx to be reset to constrained values at the beginning of every step.
+Misc. model options, see manual. Set to save output as "MostRecentRun" in
+SavedOutpuuts folder
 %}
 
 ModelOptions.Verbose        = 2;
@@ -125,77 +103,54 @@ ModelOptions.EndPointsOnly  = 1;
 ModelOptions.LinkSteps      = 1;%Link quasi spinup
 ModelOptions.IntTime        = 60; %60 second intervals - mz
 ModelOptions.TimeStamp      = Feb09.Time;
-ModelOptions.SavePath       = 'DielExampleOutput';
-% ModelOptions.FixNOx         = 1; %if you use this, disable family conservation above.
+ModelOptions.SavePath       = 'C:\Users\Mzing\git\quinnipiac-senior-research\MySetupsAndScripts\SavedOutputs\MiscSaves\MostRecentRun';
+
 
 
 %% INPUT REPLICATION AND INTERPOLATION
-% For this particular scenario, it might be desirable to modify the inputs in a few ways.
-% This sections demonstrates how to do so.
-
-% INTERPOLATION
-% Inputs currently have a time resolution of 60 minutes, but this is pretty coarse (the sun can move
-% a lot in 60 minutes). The InputInterp function allows you to interpolate all inputs to a finer
-% time resolution. NOTES:
-%   - If your native data is fast (e.g., 1 Hz), it is generally better practice to bin-average that 
-%       data to your desired resolution rather than average down to 60 minutes and then interpolate as done here.
-%   - Make sure you adjust ModelOptions.IntTime too!
-% To turn this on, set the "0" to "1" below.
-if 0
-    dt = 1800; %time spacing, seconds
-    
-    Time_interp = (0:dt:(86400-dt))'/3600; %interpolation timebase, fractional hours (to match SOAS.Time)
-    circularFlag = 1; % time wraps around at midnight
-    [Met,InitConc,BkgdConc] = ...
-        InputInterp(Met,InitConc,BkgdConc,Feb09.Time,Time_interp,circularFlag);
-    ModelOptions.TimeStamp = Time_interp;
-    ModelOptions.IntTime = dt;
-end
 
 % REPLICATION
-% Sometimes you may want to run the same inputs for multiple times. Typically, this scenario would
-% be ground-site observations over one or more days, and you need a "spin-up" for non-measured
-% species. The InputReplicate function lets you do this. Note, this only makes sense to use if
-% ModelOptions.LinkSteps = 1. This replaces the "ModelOptions.Repeat" functionality in model
-% versions prior to F0AMv4.
-% Here, we run the same contraints for 3 days.
-% The output "repIndex" is used to separate the days with SplitRun later.
+
 nRep = 1; %number of days to repeat
 [Met,InitConc,BkgdConc,repIndex] = InputReplicate(Met,InitConc,BkgdConc,nRep);
 ModelOptions.TimeStamp = repmat(ModelOptions.TimeStamp,nRep,1);
 
 %% MODEL RUN
-% Now we call the model. Note this may take several minutes to run, depending on your system.
-% Output will be saved in the "SavePath" above and will also be written to the structure S.
+
+%Starts the model run with above settings
 
 S = F0AM_ModelCore(Met,InitConc,ChemFiles,BkgdConc,ModelOptions);
-% clear Met InitConc ChemFiles BkgdConc ModelOptions
+ clear Met InitConc ChemFiles BkgdConc ModelOptions
 
 %% PLOTTING AND ANALYSIS
 
-figure % new figure, Model compared to actual O3
+%NEW FIGURE: O3 PREDICTED BY MODEL COMPARED TO MEASURED O3
 
-x = Feb09.Time; % X - axis, minute of day
-y1 = Feb09.O3; % Y1, Observed O3
-y2 = S.Conc.O3; % Y2, Model prediction, O3
-plot(x,y1,'k') %Observed O3 as black line
+figure 
 
-hold on %Plot the next point on the same figure
-plot(x,y2,'-o', 'LineWidth',3) %Model Prediction as blue line
+x = Feb09.Time;
+y1 = Feb09.O3; 
+y2 = S.Conc.O3;
+plot(x,y1,'k') 
+
+hold on 
+plot(x,y2,'-o', 'LineWidth',3) 
 
 title('Model Prediction, No VOCs, Feb09')
 
 legend('Observed Values','Model Prediction')
 
-figure % New figure, difference between model and actual
+%NEXT FIGURE: PLOTTED DISPARITY BETWEEN MODEL AND MEASUREMENT
 
-x = Feb09.Time; % X - axis, minute of day
-y1 = Feb09.O3; % Y1, Observed O3
-y2 = S.Conc.O3; % Y2, Model prediction, O3
+figure 
 
-diff = y2-y1;  %model-actual
+x = Feb09.Time;
+y1 = Feb09.O3; 
+y2 = S.Conc.O3; 
 
-plot(x,diff) % Plot difference vs minute of day
+diff = y2-y1; 
+
+plot(x,diff)
 
 title('Model Disparity')
 

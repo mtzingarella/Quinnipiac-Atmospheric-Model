@@ -1,5 +1,28 @@
-% Put all relevant .mat files in the "Date_DataToLoad" file and run this
-% script to compare disparity between the 3 methods
+% Generates useful plots for analysis of the model output in the adjacent
+% "DataToLoad" folder. I currently move the outputs I would like to analyze
+% into the folder manually, but will have the data from the most recent run
+% autosave there in future updates.
+
+%FIGURES GENERATED:
+
+%FIGURE 1: Measured ozone profile for collection period
+
+%FIGURE 2: Predicted vs Measured Ozone using SZA (Solar Zenith Angle) method
+
+%FIGURE 3: Predicted vs Measured Ozone using PSS (Photostationary State)
+%method
+
+%FIGURE 4: Predicted vs Measured Ozone using Photoresistor method
+
+%FIGURE 5: Comaprison of disparity between model/actual for all 3 methods
+
+%FIGURE 6: Measured NO profile for collection period
+
+%FIGURE 7: Measured NO2 profile for collection period
+
+%FIGURE 8: Measured light intensity profile for collection period
+
+
 
 
 % BEGIN LOADING IN RELEVANT DATA TO WORKSPACE
@@ -7,7 +30,7 @@
 
 
 % set the path to the folder containing the .mat files
-folder_path = 'C:\Users\Mzing\git\quinnipiac-senior-research\SavedOutputs\Sep16\Sep16_DataToLoad';
+folder_path = 'C:\Users\Mzing\git\quinnipiac-senior-research\MySetupsAndScripts\SavedOutputs\Sep16\Sep16_DataToLoad';
 
 % get a list of all .mat files in the folder
 file_list = dir(fullfile(folder_path, '*.mat'));
@@ -23,64 +46,105 @@ end
 %--------------------------------------------------------------------------
 % BEGIN PLOTTING DATA
 
+% NEW FIGURE, Measured O3
+
+figure 
+
+x = Sep16.Time; 
+y1 = Sep16.O3;
+myFontSize = 20;
+
+plot(x,y1,'k') 
 
 
-figure % new figure, Model compared to actual O3
+xlabel('Time of Day')
+ylabel('Ozone Concentration (ppb)')
 
-x = Sep16.Time; % X - axis, minute of day
-y1 = Sep16.O3; % Y1, Observed O3
-y2 = PSS_Output.Conc.O3; % Y2, Model prediction, O3
-plot(x,y1,'k') %Observed O3 as black line
+xticks([420, 600, 780, 960])
+xticklabels(["7 AM", "10 AM", "1 PM", "4 PM"])
 
-hold on %Plot the next point on the same figure
-plot(x,y2,'-o','LineWidth',3) %Model Prediction as blue line
-
-title('Sep16 PSS Derived JNO2')
-
-legend('Observed Values','Model Prediction')
+title('Sep16 Ozone Production')
 
 
-% NEXT FIGURE
 
-figure % new figure, Model compared to actual O3
+% NEXT FIGURE, SZA Method
 
-x = Sep16.Time; % X - axis, minute of day
-y1 = Sep16.O3; % Y1, Observed O3
-y2 = SZA_Output.Conc.O3; % Y2, Model prediction, O3
-plot(x,y1,'k') %Observed O3 as black line
+figure 
 
-hold on %Plot the next point on the same figure
-plot(x,y2,'-o','LineWidth',3) %Model Prediction as blue line
+x = Sep16.Time; 
+y1 = Sep16.O3; 
+y2 = SZA_Output.Conc.O3; 
+plot(x,y1,'k') 
 
-title('Sep16 SZA Estimated JNO2')
+hold on 
+plot(x,y2,'Color', [1 0.5 0],'LineWidth',3) 
 
-legend('Observed Values','Model Prediction')
+xlabel('Time of Day')
+ylabel('Ozone Concentration (ppb)')
 
-% NEXT FIGURE
+xticks([420, 600, 780, 960])
+xticklabels(["7 AM", "10 AM", "1 PM", "4 PM"])
 
-figure % new figure, Model compared to actual O3
+title('Sep16 SZA JNO2')
 
-x = Sep16.Time; % X - axis, minute of day
-y1 = Sep16.O3; % Y1, Observed O3
-y2 = TUV_Output.Conc.O3; % Y2, Model prediction, O3
-plot(x,y1,'k') %Observed O3 as black line
+legend('Observed Values','Model Prediction', 'Location', 'north')
 
-hold on %Plot the next point on the same figure
-plot(x,y2,'-o','LineWidth',3) %Model Prediction as blue line
 
-title('Sep16 Photodetector + TUV Scaling Estimated JNO2')
+% NEXT FIGURE, PSS Method
 
-legend('Observed Values','Model Prediction')
+figure 
 
-% NEXT FIGURE
+x = Sep16.Time; 
+y1 = Sep16.O3; 
+y2 = PSS_Output.Conc.O3; 
+plot(x,y1,'k') 
 
-figure % New figure, difference between model and actual for multiple methods
+hold on 
+plot(x,y2,'Color', 'b','LineWidth',3)
 
-x = Sep16.Time; % X - axis, minute of day
-y1 = Sep16.O3; % Y1, Observed O3
-y2 = PSS_Output.Conc.O3; % Y2, Model prediction, O3, PSS
-y3 = SZA_Output.Conc.O3;  % Y3, Model prediction, O3, SZA
-y4 = TUV_Output.Conc.O3;  % Y4, Model prediction, O3, TUV
+xlabel('Time of Day')
+ylabel('Ozone Concentration (ppb)')
+
+xticks([420, 600, 780, 960])
+xticklabels(["7 AM", "10 AM", "1 PM", "4 PM"])
+
+title('Sep16 PSS JNO2')
+
+legend('Observed Values','Model Prediction', 'Location', 'north')
+
+% NEXT FIGURE, Photodetected Scaling Method
+
+figure
+
+x = Sep16.Time; 
+y1 = Sep16.O3;
+y2 = TUV_Output.Conc.O3;
+plot(x,y1,'k') 
+
+hold on 
+
+plot(x,y2,'r','LineWidth',3) 
+
+xticks([420, 600, 780, 960])
+xticklabels(["7 AM", "10 AM", "1 PM", "4 PM"])
+
+xlabel('Time of Day')
+ylabel('Ozone Concentration (ppb)')
+
+title('Sep16 Photoresistor Scaling JNO2')
+
+legend('Observed Values','Model Prediction', 'Location', 'north')
+
+% NEXT FIGURE, Model Disparity Plot for All 3 Methods
+
+figure 
+
+x = Sep16.Time;
+y1 = Sep16.O3;
+y2 = PSS_Output.Conc.O3; 
+y3 = SZA_Output.Conc.O3; 
+y4 = TUV_Output.Conc.O3;
+
 
 
 diff1 = y2-y1;  %model-actual PSS
@@ -94,25 +158,110 @@ diff2_ds = movmean(diff2, ds_factor);
 diff3_ds = movmean(diff3, ds_factor);
 
 
-%Plot the differences 
+%Plot the differences
+
 plot(x,diff1_ds) 
 hold on
+
 plot(x,diff2_ds)
 hold on
-plot(x,diff3_ds)
+
+plot(x,diff3_ds, 'r')
+
+xticks([420, 600, 780, 960])
+xticklabels(["7 AM", "10 AM", "1 PM", "4 PM"])
 
 
-
-
-
-
-
-xlabel('Time (Minute of Day)')
+xlabel('Time of Day')
 ylabel('Difference in Ozone Concentration (ppb)')
 
 % add a horizontal line at y = 0 to make it clear where disparity is
 % highest
 line([min(x) max(x)], [0 0], 'color', 'r', 'linestyle', '--')
 
-title('Sep16 Model Disparity, PSS Derived JNO2')
-legend('PSS Estimated JNO2','SZA Estimated JNO2', 'TUV/Photoresistor Es')
+title('Model Disparity Comparison')
+legend('PSS Estimated JNO2','SZA Estimated JNO2', 'Photoresistor Estimated JNO2', 'Location', 'north')
+
+% NEXT FIGURE, NO Profile for Collection Period
+
+figure 
+
+x = Sep16.Time; 
+y1 = Sep16.NO;
+
+plot(x,y1,'Color', [0, 100, 0]/255) 
+
+
+xticks([420, 600, 780, 960])
+xticklabels(["7 AM", "10 AM", "1 PM", "4 PM"])
+
+xlabel('Time of Day')
+ylabel('NO Concentration (ppb)')
+
+title('Sep16 Measured NO')
+
+% NEXT FIGURE, NO2 Profile for Collection Period
+
+figure 
+
+x = Sep16.Time; 
+y1 = Sep16.NO2; 
+
+plot(x,y1,'Color', [0, 100, 0]/255)
+
+xticks([420, 600, 780, 960])
+xticklabels(["7 AM", "10 AM", "1 PM", "4 PM"])
+
+xlabel('Time of Day')
+ylabel('NO2 Concentration (ppb)')
+
+title('Sep16 Measured NO2')
+
+% NEXT FIGURE, Light Intensity Profile for Collection Period
+
+figure 
+
+x = Sep16.Time; % X - axis, minute of day
+y1 = 1./Sep16.Lite; % 1/Photoresistor output + epsilon (some values are 0 and dividing by 0 makes MATLAB explode)
+
+
+plot(x,y1,'Color',[184, 134, 11]/255) 
+
+
+xticks([420, 600, 780, 960])
+xticklabels(["7 AM", "10 AM", "1 PM", "4 PM"])
+
+xlabel('Time of Day')
+ylabel('1/Photoresistor Output (1/V)')
+
+title('Sep16 Light Intensity')
+
+% MISC. FORMATTING FOR ALL FIGURES
+
+% Define the font size to be used
+font_size = 19;
+
+% Get the handles to all figures
+fig_handles = findall(0, 'Type', 'figure');
+
+% Loop over each figure and set the font size for its axes
+for i = 1:numel(fig_handles)
+    set(findall(fig_handles(i), 'Type', 'Axes'), 'FontSize', font_size);
+end
+
+% Define the figure size to be used
+fig_width = 700;  % in pixels
+fig_height = 500; % in pixels
+
+% Get the handles to all figures
+fig_handles = findall(0, 'Type', 'figure');
+
+% Loop over each figure and set the font size and figure size
+for i = 1:numel(fig_handles)
+    % Modify the font size
+    set(findall(fig_handles(i), 'Type', 'Axes'), 'FontSize', font_size);
+
+    % Modify the figure size
+    set(fig_handles(i), 'Position', [100, 100, fig_width, fig_height]);
+end
+

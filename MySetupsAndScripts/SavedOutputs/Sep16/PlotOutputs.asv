@@ -7,12 +7,22 @@
 
 %FIGURE 1: Measured ozone profile for collection period
 
-%FIGURE 2: Predicted vs Measured Ozone using SZA method
+%FIGURE 2: Predicted vs Measured Ozone using SZA (Solar Zenith Angle) method
 
-%FIGURE 3: 
+%FIGURE 3: Predicted vs Measured Ozone using PSS (Photostationary State)
+%method
+
+%FIGURE 4: Predicted vs Measured Ozone using Photoresistor method
+
+%FIGURE 5: Comaprison of disparity between model/actual for all 3 methods
+
+%FIGURE 6: Measured NO profile for collection period
+
+%FIGURE 7: Measured NO2 profile for collection period
+
+%FIGURE 8: Measured light intensity profile for collection period
 
 
-% script to get the following figures
 
 
 % BEGIN LOADING IN RELEVANT DATA TO WORKSPACE
@@ -20,7 +30,7 @@
 
 
 % set the path to the folder containing the .mat files
-folder_path = 'C:\Users\Mzing\git\quinnipiac-senior-research\MySetupsAndScripts\SavedOutputs\Sep27\Sep27_DataToLoad';
+folder_path = 'C:\Users\Mzing\git\quinnipiac-senior-research\MySetupsAndScripts\SavedOutputs\Sep16\Sep16_DataToLoad';
 
 % get a list of all .mat files in the folder
 file_list = dir(fullfile(folder_path, '*.mat'));
@@ -172,14 +182,14 @@ line([min(x) max(x)], [0 0], 'color', 'r', 'linestyle', '--')
 title('Model Disparity Comparison')
 legend('PSS Estimated JNO2','SZA Estimated JNO2', 'Photoresistor Estimated JNO2', 'Location', 'north')
 
-% NEXT FIGURE, NO 
+% NEXT FIGURE, NO Profile for Collection Period
 
 figure 
 
-x = Sep27.Time; % X - axis, minute of day
-y1 = Sep27.NO; % Y1, Observed NO
+x = Sep27.Time; 
+y1 = Sep27.NO;
 
-plot(x,y1,'Color', [0, 100, 0]/255) %Observed NO as green line
+plot(x,y1,'Color', [0, 100, 0]/255) 
 
 
 xticks([420, 600, 780, 960])
@@ -190,17 +200,14 @@ ylabel('NO Concentration (ppb)')
 
 title('Sep27 Measured NO')
 
-% NEXT FIGURE
+% NEXT FIGURE, NO2 Profile for Collection Period
 
 figure 
 
-x = Sep27.Time; % X - axis, minute of day
-y1 = Sep27.NO2; % Y1, Observed NO2
+x = Sep27.Time; 
+y1 = Sep27.NO2; 
 
-
-
-plot(x,y1,'Color', [0, 100, 0]/255) %Observed NO2 as green line
-
+plot(x,y1,'Color', [0, 100, 0]/255)
 
 xticks([420, 600, 780, 960])
 xticklabels(["7 AM", "10 AM", "1 PM", "4 PM"])
@@ -210,7 +217,7 @@ ylabel('NO2 Concentration (ppb)')
 
 title('Sep27 Measured NO2')
 
-% NEXT FIGURE, 
+% NEXT FIGURE, Light Intensity Profile for Collection Period
 
 figure 
 
@@ -228,6 +235,8 @@ xlabel('Time of Day')
 ylabel('1/Photoresistor Output (1/V)')
 
 title('Sep27 Light Intensity')
+
+% MISC. FORMATTING FOR ALL FIGURES
 
 % Define the font size to be used
 font_size = 19;
